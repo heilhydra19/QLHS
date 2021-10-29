@@ -24,14 +24,14 @@ namespace QLHS.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Comment>>> GetComments()
         {
-            return await _context.Comments.ToListAsync();
+            return await _context.Comments.Include(x=>x.StudentNavigation).ToListAsync();
         }
 
         // GET: api/Comments/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<IEnumerable<Comment>>> GetComment(int id)
+        public async Task<ActionResult<IEnumerable<Comment>>> GetComments(int id)
         {
-            var comment = await _context.Comments.Where(x=>x.PostId==id).Include(x=>x.Studen).ToListAsync();
+            var comment = await _context.Comments.Include(x=>x.StudentNavigation).Where(x => x.PostId == id).ToListAsync();
 
             if (comment == null)
             {

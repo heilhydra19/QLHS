@@ -9,9 +9,7 @@ namespace QLHS.Models
         public Subject()
         {
             Scores = new HashSet<Score>();
-        }
-
-        [Key]
+        } 
         public int Id { get; set; }
         public string Name { get; set; }
 

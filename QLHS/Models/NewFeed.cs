@@ -11,12 +11,12 @@ namespace QLHS.Models
         public NewFeed()
         {
             Comments = new HashSet<Comment>();
-        }
-        [Key]
+        } 
         public int Id { get; set; }
         public string Img { get; set; }
         public string Title { get; set; }
-        public string Content { get; set; }
+        public string PostContent { get; set; }
+        public DateTime CreatedAt { get; set; }
         public virtual ICollection<Comment> Comments { get; set; }
     }
 }

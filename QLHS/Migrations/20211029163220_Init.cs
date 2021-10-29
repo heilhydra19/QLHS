@@ -15,11 +15,12 @@ namespace QLHS.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Img = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Content = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    PostContent = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP")
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_NewFeeds", x => x.Id);
+                    table.PrimaryKey("pk_newfeed", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -39,7 +40,7 @@ namespace QLHS.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Students", x => x.Id);
+                    table.PrimaryKey("pk_student", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -52,29 +53,30 @@ namespace QLHS.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Subjects", x => x.Id);
+                    table.PrimaryKey("pk_subject", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Comments",
                 columns: table => new
                 {
-                    StudenId = table.Column<int>(type: "int", nullable: false),
+                    StudentId = table.Column<int>(type: "int", nullable: false),
                     PostId = table.Column<int>(type: "int", nullable: false),
-                    Content = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    CommentContent = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP")
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Comments", x => new { x.PostId, x.StudenId, x.Content });
+                    table.PrimaryKey("pk_comment", x => new { x.PostId, x.StudentId, x.CommentContent });
                     table.ForeignKey(
-                        name: "FK_Comments_NewFeeds_PostId",
+                        name: "fk_comment_post",
                         column: x => x.PostId,
                         principalTable: "NewFeeds",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Comments_Students_StudenId",
-                        column: x => x.StudenId,
+                        name: "fk_comment_student",
+                        column: x => x.StudentId,
                         principalTable: "Students",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -94,25 +96,25 @@ namespace QLHS.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Scores", x => new { x.StudentId, x.SubjectId });
+                    table.PrimaryKey("pk_score", x => new { x.StudentId, x.SubjectId });
                     table.ForeignKey(
-                        name: "FK_Scores_Students_StudentId",
-                        column: x => x.StudentId,
-                        principalTable: "Students",
+                        name: "fk_score_post",
+                        column: x => x.SubjectId,
+                        principalTable: "Subjects",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Scores_Subjects_SubjectId",
-                        column: x => x.SubjectId,
-                        principalTable: "Subjects",
+                        name: "fk_score_student",
+                        column: x => x.StudentId,
+                        principalTable: "Students",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Comments_StudenId",
+                name: "IX_Comments_StudentId",
                 table: "Comments",
-                column: "StudenId");
+                column: "StudentId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Scores_SubjectId",
@@ -132,10 +134,10 @@ namespace QLHS.Migrations
                 name: "NewFeeds");
 
             migrationBuilder.DropTable(
-                name: "Students");
+                name: "Subjects");
 
             migrationBuilder.DropTable(
-                name: "Subjects");
+                name: "Students");
         }
     }
 }
