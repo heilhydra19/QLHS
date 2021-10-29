@@ -27,15 +27,15 @@ namespace QLHS.Migrations
                     b.Property<int>("StudentId")
                         .HasColumnType("int");
 
-                    b.Property<string>("CommentContent")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
-                    b.HasKey("PostId", "StudentId", "CommentContent")
+                    b.Property<string>("CommentContent")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("PostId", "StudentId", "CreatedAt")
                         .HasName("pk_comment");
 
                     b.HasIndex("StudentId");

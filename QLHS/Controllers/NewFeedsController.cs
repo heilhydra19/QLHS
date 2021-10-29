@@ -69,7 +69,7 @@ namespace QLHS.Controllers
                 }
             }
 
-            return NoContent();
+            return CreatedAtAction("GetNewFeed", new { id = newFeed.Id }, newFeed);
         }
 
         // POST: api/NewFeeds

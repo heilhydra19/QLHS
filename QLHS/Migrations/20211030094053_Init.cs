@@ -62,12 +62,12 @@ namespace QLHS.Migrations
                 {
                     StudentId = table.Column<int>(type: "int", nullable: false),
                     PostId = table.Column<int>(type: "int", nullable: false),
-                    CommentContent = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP")
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
+                    CommentContent = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_comment", x => new { x.PostId, x.StudentId, x.CommentContent });
+                    table.PrimaryKey("pk_comment", x => new { x.PostId, x.StudentId, x.CreatedAt });
                     table.ForeignKey(
                         name: "fk_comment_post",
                         column: x => x.PostId,

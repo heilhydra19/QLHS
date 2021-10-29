@@ -69,7 +69,7 @@ namespace QLHS.Controllers
                 }
             }
 
-            return NoContent();
+            return CreatedAtAction("GetScore", new { id = score.StudentId }, score);
         }
 
         // POST: api/Scores

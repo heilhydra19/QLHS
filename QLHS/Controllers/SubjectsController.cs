@@ -69,7 +69,7 @@ namespace QLHS.Controllers
                 }
             }
 
-            return NoContent();
+            return CreatedAtAction("GetSubject", new { id = subject.Id }, subject);
         }
 
         // POST: api/Subjects

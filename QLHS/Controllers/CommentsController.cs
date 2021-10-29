@@ -24,14 +24,14 @@ namespace QLHS.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Comment>>> GetComments()
         {
-            return await _context.Comments.Include(x=>x.StudentNavigation).ToListAsync();
+            return await _context.Comments.Include(x=>x.StudentNavigation).OrderByDescending(x=>x.CreatedAt).ToListAsync();
         }
 
         // GET: api/Comments/5
         [HttpGet("{id}")]
         public async Task<ActionResult<IEnumerable<Comment>>> GetComments(int id)
         {
-            var comment = await _context.Comments.Include(x=>x.StudentNavigation).Where(x => x.PostId == id).ToListAsync();
+            var comment = await _context.Comments.Include(x=>x.StudentNavigation).OrderByDescending(x => x.CreatedAt).Where(x => x.PostId == id).ToListAsync();
 
             if (comment == null)
             {
@@ -69,7 +69,7 @@ namespace QLHS.Controllers
                 }
             }
 
-            return NoContent();
+            return CreatedAtAction("GetComments", new { id = comment.PostId }, comment);
         }
 
         // POST: api/Comments

@@ -23,7 +23,7 @@ namespace QLHS.Models
         {
             modelBuilder.Entity<Comment>(entity =>
             {
-                entity.HasKey(c => new { c.PostId, c.StudentId, c.CommentContent })
+                entity.HasKey(c => new { c.PostId, c.StudentId, c.CreatedAt })
                                    .HasName("pk_comment");
                 entity.Property(p => p.CreatedAt)
                       .HasDefaultValueSql("CURRENT_TIMESTAMP");

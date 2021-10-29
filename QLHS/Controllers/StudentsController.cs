@@ -83,7 +83,7 @@ namespace QLHS.Controllers
                 }
             }
 
-            return NoContent();
+            return CreatedAtAction("GetStudent", new { id = student.Id }, student);
         }
 
         // POST: api/Students
