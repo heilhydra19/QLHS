@@ -41,7 +41,7 @@ namespace QLHS.Controllers
             return student;
         }
 
-        [HttpGet("{login}")]
+        [HttpGet("login")]
         public async Task<ActionResult<Student>> Login(string username, string password)
         {
             var student = await _context.Students.FirstOrDefaultAsync(x => x.Username == username && x.Password == password);

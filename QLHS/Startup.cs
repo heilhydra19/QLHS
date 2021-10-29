@@ -13,6 +13,7 @@ using QLHS.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace QLHS
@@ -35,6 +36,9 @@ namespace QLHS
                         .AllowAnyMethod()
                         .AllowAnyHeader();
             }));
+            services.AddMvc(option => option.EnableEndpointRouting = false)
+                .SetCompatibilityVersion(CompatibilityVersion.Version_3_0)
+                .AddNewtonsoftJson(opt => opt.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
             services.AddDbContext<DatabaseContext>(opt => opt.UseSqlServer(Configuration.GetConnectionString("Db")));
             services.AddControllers();
             services.AddSwaggerGen(c =>

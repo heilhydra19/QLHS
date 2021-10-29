@@ -10,7 +10,7 @@ using QLHS.Models;
 namespace QLHS.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20211029153224_Init")]
+    [Migration("20211029163220_Init")]
     partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -26,15 +26,21 @@ namespace QLHS.Migrations
                     b.Property<int>("PostId")
                         .HasColumnType("int");
 
-                    b.Property<int>("StudenId")
+                    b.Property<int>("StudentId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Content")
+                    b.Property<string>("CommentContent")
                         .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("PostId", "StudenId", "Content");
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
-                    b.HasIndex("StudenId");
+                    b.HasKey("PostId", "StudentId", "CommentContent")
+                        .HasName("pk_comment");
+
+                    b.HasIndex("StudentId");
 
                     b.ToTable("Comments");
                 });
@@ -46,16 +52,22 @@ namespace QLHS.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("Content")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.Property<string>("Img")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PostContent")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Title")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_newfeed");
 
                     b.ToTable("NewFeeds");
                 });
@@ -83,7 +95,8 @@ namespace QLHS.Migrations
                     b.Property<double?>("Test60m")
                         .HasColumnType("float");
 
-                    b.HasKey("StudentId", "SubjectId");
+                    b.HasKey("StudentId", "SubjectId")
+                        .HasName("pk_score");
 
                     b.HasIndex("SubjectId");
 
@@ -121,7 +134,8 @@ namespace QLHS.Migrations
                     b.Property<string>("Username")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_student");
 
                     b.ToTable("Students");
                 });
@@ -136,47 +150,52 @@ namespace QLHS.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_subject");
 
                     b.ToTable("Subjects");
                 });
 
             modelBuilder.Entity("QLHS.Models.Comment", b =>
                 {
-                    b.HasOne("QLHS.Models.NewFeed", "Post")
+                    b.HasOne("QLHS.Models.NewFeed", "PostNavigation")
                         .WithMany("Comments")
                         .HasForeignKey("PostId")
+                        .HasConstraintName("fk_comment_post")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("QLHS.Models.Student", "Studen")
+                    b.HasOne("QLHS.Models.Student", "StudentNavigation")
                         .WithMany("Comments")
-                        .HasForeignKey("StudenId")
+                        .HasForeignKey("StudentId")
+                        .HasConstraintName("fk_comment_student")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Post");
+                    b.Navigation("PostNavigation");
 
-                    b.Navigation("Studen");
+                    b.Navigation("StudentNavigation");
                 });
 
             modelBuilder.Entity("QLHS.Models.Score", b =>
                 {
-                    b.HasOne("QLHS.Models.Student", "Student")
+                    b.HasOne("QLHS.Models.Student", "StudentNavigation")
                         .WithMany("Scores")
                         .HasForeignKey("StudentId")
+                        .HasConstraintName("fk_score_student")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("QLHS.Models.Subject", "Subject")
+                    b.HasOne("QLHS.Models.Subject", "SubjectNavigation")
                         .WithMany("Scores")
                         .HasForeignKey("SubjectId")
+                        .HasConstraintName("fk_score_post")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Student");
+                    b.Navigation("StudentNavigation");
 
-                    b.Navigation("Subject");
+                    b.Navigation("SubjectNavigation");
                 });
 
             modelBuilder.Entity("QLHS.Models.NewFeed", b =>

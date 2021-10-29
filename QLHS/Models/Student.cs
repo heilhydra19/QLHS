@@ -12,8 +12,7 @@ namespace QLHS.Models
         {
             Comments = new HashSet<Comment>();
             Scores = new HashSet<Score>();
-        }
-        [Key]
+        } 
         public int Id { get; set; }
         public string Name { get; set; }
         public string Img { get; set; }
