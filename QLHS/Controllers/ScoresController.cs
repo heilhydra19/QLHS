@@ -29,9 +29,9 @@ namespace QLHS.Controllers
 
         // GET: api/Scores/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Score>> GetScore(int id)
+        public async Task<ActionResult<IEnumerable<Score>>> GetScoresByIdStudent(int id)
         {
-            var score = await _context.Scores.FindAsync(id);
+            var score = await _context.Scores.Where(x=>x.StudentId == id).Include(x=>x.SubjectNavigation).ToListAsync();
 
             if (score == null)
             {

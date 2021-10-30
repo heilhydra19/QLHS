@@ -1,10 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
+using Google.Apis.Auth.OAuth2;
+using Google.Apis.Gmail.v1;
+using Google.Apis.Gmail.v1.Data;
+using Google.Apis.Services;
+using Google.Apis.Util.Store;
+using MailKit.Net.Smtp;
+using MailKit.Security;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using MimeKit;
 using QLHS.Models;
 
 namespace QLHS.Controllers
@@ -86,6 +96,28 @@ namespace QLHS.Controllers
             return CreatedAtAction("GetStudent", new { id = student.Id }, student);
         }
 
+        [HttpPut("changePassword")]
+        public async Task<IActionResult> ChangePassword(int id, string newPass)
+        {
+            var student = _context.Students.FirstOrDefault(x => x.Id == id);
+            if(student == null)
+            {
+                return NotFound();
+            }
+            student.Password = newPass;
+            _context.Update(student);
+            _context.SaveChanges();
+            if(student.Email != null)
+            {
+                try
+                {
+                    SendMail(student.Name, student.Email);
+                }
+                catch { }
+            }
+            return CreatedAtAction("GetStudent", new { id = student.Id }, student);
+        }
+
         // POST: api/Students
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
@@ -116,6 +148,68 @@ namespace QLHS.Controllers
         private bool StudentExists(int id)
         {
             return _context.Students.Any(e => e.Id == id);
+        }
+
+        ////
+        //static string[] Scopes = { GmailService.Scope.GmailSend };
+        //static string ApplicationName = "SendMail";
+        //public static string Base64UrlEncode(string input)
+        //{
+        //    var inputBytes = System.Text.Encoding.UTF8.GetBytes(input);
+        //    return Convert.ToBase64String(inputBytes).Replace("+", "-").Replace("/", "_").Replace("=", "");
+        //}
+        //void SendMail(string email)
+        //{
+        //    UserCredential credential;
+        //    using (FileStream stream = new FileStream(@"./credentials.json", FileMode.Open, FileAccess.Read))
+        //    {
+        //        string credPath = @"./bin/Release/net5.0/token.json";
+        //        credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
+        //            GoogleClientSecrets.Load(stream).Secrets,
+        //            Scopes,
+        //            "user",
+        //            CancellationToken.None,
+        //            new FileDataStore(credPath, true)).Result;
+        //    }
+
+        //    string plainText = $"To: {email}\r\n" +
+        //                       $"Subject: Password has changed\r\n" +
+        //                       "Content-Type: text/html; charset=utf-8\r\n\r\n" +
+        //                       $"<p>Password has changed at {DateTime.Now.ToString("dd/MM/yyyy hh:mm:ss")}</p>";
+
+        //    var service = new GmailService(new BaseClientService.Initializer()
+        //    {
+        //        HttpClientInitializer = credential,
+        //        ApplicationName = ApplicationName,
+        //    });
+
+        //    var newMsg = new Google.Apis.Gmail.v1.Data.Message();
+        //    newMsg.Raw = Base64UrlEncode(plainText.ToString());
+        //    service.Users.Messages.Send(newMsg, "me").Execute();
+        //}
+        void SendMail(string name, string email)
+        {
+            MimeMessage message = new MimeMessage();
+            using (var client = new SmtpClient())
+            {
+                // This is where you will input the email it is coming from (hint: your gmail address)
+                message.From.Add(new MailboxAddress("Lãnh tụ", "khoaanhdang11@gmail.com"));
+                // This is where you add in the recipient email (hint: you can test using your own gmail address as well)
+                message.To.Add(new MailboxAddress(name, email));
+                message.Subject = "PASSWORD CHANGED";
+
+                var bodyBuilder = new BodyBuilder();
+                bodyBuilder.HtmlBody = "<p>Your password has been changed at " + DateTime.Now.ToString("dd/MM/yyyy hh:mm:ss")+ "</p>";
+                message.Body = bodyBuilder.ToMessageBody();
+
+                client.Connect("smtp.gmail.com", 465, SecureSocketOptions.SslOnConnect);
+
+                // Go to Google Profile to generate an app password rather than using your real password here
+                client.Authenticate("khoaanhdang11@gmail.com", "gmejtlyjhrmdlbhv");
+
+                client.Send(message);
+                client.Disconnect(true);
+            }
         }
     }
 }

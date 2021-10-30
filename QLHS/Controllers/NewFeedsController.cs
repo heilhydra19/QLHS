@@ -24,7 +24,7 @@ namespace QLHS.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<NewFeed>>> GetNewFeeds()
         {
-            return await _context.NewFeeds.ToListAsync();
+            return await _context.NewFeeds.OrderByDescending(x => x.CreatedAt).ToListAsync();
         }
 
         // GET: api/NewFeeds/5
