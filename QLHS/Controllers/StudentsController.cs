@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -192,19 +193,16 @@ namespace QLHS.Controllers
             MimeMessage message = new MimeMessage();
             using (var client = new SmtpClient())
             {
-                // This is where you will input the email it is coming from (hint: your gmail address)
                 message.From.Add(new MailboxAddress("Lãnh tụ", "khoaanhdang11@gmail.com"));
-                // This is where you add in the recipient email (hint: you can test using your own gmail address as well)
                 message.To.Add(new MailboxAddress(name, email));
                 message.Subject = "PASSWORD CHANGED";
 
-                var bodyBuilder = new BodyBuilder();
-                bodyBuilder.HtmlBody = "<p>Your password has been changed at " + DateTime.Now.ToString("dd/MM/yyyy hh:mm:ss")+ "</p>";
+                var bodyBuilder = new BodyBuilder(); 
+                bodyBuilder.HtmlBody = "<p>Your password has been changed on " + DateTime.UtcNow.AddHours(7).ToString("dddd, MMMM d, yyyy hh:mm:ss") + "</p>";
                 message.Body = bodyBuilder.ToMessageBody();
 
                 client.Connect("smtp.gmail.com", 465, SecureSocketOptions.SslOnConnect);
 
-                // Go to Google Profile to generate an app password rather than using your real password here
                 client.Authenticate("khoaanhdang11@gmail.com", "gmejtlyjhrmdlbhv");
 
                 client.Send(message);
